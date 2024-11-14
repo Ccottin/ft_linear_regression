@@ -13,16 +13,22 @@ def linear_regression(variables, data: DataFrame):
     data['error'] = None
     data['coeff'] = None
     for i in range(len(data)):
-        data.at[i, 'estimated price'] = estimate_price(data.at[i, 'price'],
-                        variables['teta0'], variables['teta1'])
+        data.at[i, 'estimated price'] = estimate_price(data.at[i, 'km'],
+                                                       variables['teta0'],
+                                                       variables['teta1'])
         data.at[i, 'error'] = data.at[i, 'estimated price'] - data.at[i, 'price']
-        data.at[i, 'coeff'] = data.at[i, 'error'] * data.at[i, 'km']
-    variables['teta0'] -= data['error'].sum() * 1/len(data) * variables['learning_rate']
-    variables['teta1'] -= data['coeff'].sum() * 1/len(data) * variables['learning_rate']
+        data.at[i, 'coeff'] = data.at[i, 'error'] * data.at[i, 'n_km']
+    variables['teta0'] -= (variables['learning_rate']) * data['error'].sum() * 1/len(data)
+    variables['teta1'] -= (variables['learning_rate']) * data['coeff'].sum() * 1/len(data)
     print(data)
-    print(variables['teta0'])
-    print(variables['teta1'])
+    print("teta0 = ", variables['teta0'])
+    print("teta1 = ", variables['teta1'])
     display_dots(data, variables)
+
+#normalisation will prevent getting too big coeeficients later on :
+#coefficient of a droite can only me modified by [0,1] or else it makes no sense#
+def normalise(data: DataFrame):
+    data['n_km'] = (data['km'] - data['km'].min()) / (data['km'].max() - data['km'].min())
 
 
 def main():
@@ -34,8 +40,10 @@ def main():
         teta1 = float(sys.argv[3])
         learning_rate = float(sys.argv[4])
         variables = {'teta0': teta0, 'teta1': teta1, 'learning_rate': learning_rate}
-        for i in range(3):
+        normalise(data)
+        for i in range(50):
             linear_regression(variables, data)
+            print("prediction pour 139800 = ", estimate_price(139800, variables['teta0'], variables['teta1']))
 
     except Exception as e:
         print("Error: ", str(e))
