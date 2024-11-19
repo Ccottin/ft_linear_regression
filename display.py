@@ -10,8 +10,8 @@ def display_dots(data, vars):
 
     to_print = DataFrame(columns=['x_values', 'y_values', 'error'])
 
-    to_print['x_values'] = np.linspace(0, data['km'].max(), 100)
-    to_print['y_values'] = f(to_print['x_values'], vars['teta1'], vars['teta0'])
+    to_print['x_values'] = data['km']
+    to_print['y_values'] = data['estimated price']
     
     plt.title('Car for sale')
     plt.ylabel('Price')
@@ -21,8 +21,8 @@ def display_dots(data, vars):
     plt.plot(to_print['x_values'], to_print['y_values'], label="courbe")
     plt.legend()
 
-    #plt.xlim(-10000, data['km'].max() + 10000)
-    #plt.ylim(-1000, data['price'].max() + 1000)
+    # plt.xlim(-10000, data['km'].max() + 10000)
+    # plt.ylim(-1000, data['price'].max() + 1000)
     # plt.ylim()
     plt.grid(True)
     data.set_index('km')
@@ -30,5 +30,7 @@ def display_dots(data, vars):
     #print("to print = \n", to_print['error'][0:24])
    # print("to print = \n", to_print)
 
-    plt.show()
-    plt.close()
+    # plt.show()
+    plt.draw()
+    plt.pause(0.005)
+    plt.clf()

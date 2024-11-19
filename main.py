@@ -18,15 +18,15 @@ def linear_regression(vars, data: DataFrame):
     data['coeff'] = None
 
     for i in range(len(data)):
-        data.at[i, 's_estimated price'] = estimate_price(data.at[i, 's_km'],
-                                                         vars['teta0'],
-                                                         vars['teta1'])
-        # data.at[i, 'estimated price'] = estimate_price(data.at[i, 'km'],
-        #                                                vars['teta0'],
-        #                                                vars['teta1'])
-        data.at[i, 'estimated price'] = (data.at[i, 's_estimated price'] * 
-                                         vars['std_price']) + vars['mean_price']
-    data['error'] = data['s_estimated price'] - data['s_price']
+        # data.at[i, 's_estimated price'] = estimate_price(data.at[i, 's_km'],
+        #                                                  vars['teta0'],
+        #                                                  vars['teta1'])
+        data.at[i, 'estimated price'] = estimate_price(data.at[i, 's_km'],
+                                                       vars['teta0'],
+                                                       vars['teta1'])
+        # data.at[i, 'estimated price'] = (data.at[i, 's_estimated price'] * 
+        #                                  vars['std_price']) + vars['mean_price']
+    data['error'] = data['estimated price'] - data['price']
     data['coeff'] = data['error'] * data['s_km']
    # data['erroryo'] = abs(data['error'])
     tmpteta0 = (vars['learning_rate']) * (data['error'].sum() * (1 / len(data)))
@@ -45,13 +45,8 @@ def linear_regression(vars, data: DataFrame):
     print("teta1 = ", vars['teta1'])
     print("tmpteta0 = ", tmpteta0)
     print("tmpteta1 = ", tmpteta1)
-   # display_dots(data, vars)
+    display_dots(data, vars)
 
-#normalisation will prevent getting too big coeeficients later on :
-#coefficient of a droite can only me modified by [0,1] or else it makes no sense
-def normalise(data: DataFrame):
-    data['n_km'] = (data['km'] - data['km'].min()) / (data['km'].max() - data['km'].min())
-    data['n_price'] = (data['price'] - data['price'].min()) / (data['price'].max() - data['price'].min())
 
 
 # la standardisation transforme les donnees pour qu elles aient une moyenne de 0 et un ecart type de 1
@@ -89,18 +84,21 @@ def main():
     try:
 
         options.display.float_format = '{:.5f}'.format
-        assert len(sys.argv) == 5, "Please provide a single file and teta values"
+        assert len(sys.argv) == 6, "Please provide a single file and teta values"
         data = load(sys.argv[1])
         teta0 = float(sys.argv[2])
         teta1 = float(sys.argv[3])
         learning_rate = float(sys.argv[4])
+        nb_iteration = int(sys.argv[5])
         vars = {'teta0': teta0, 'teta1': teta1, 'learning_rate': learning_rate}
-        #normalise(data)
         standardise(data, vars)
-        for i in range(50):
+        for i in range(nb_iteration):
             linear_regression(vars, data)
-            print("prediction pour 139800 = ", estimate_price(139800, vars['teta0'], vars['teta1']))
-            print("prediction pour 1110 = ", estimate_price(1110, vars['teta0'], vars['teta1']))
+            teta1 = vars['teta1'] / vars['std_km']
+            teta0 = vars['teta0'] - (vars['teta1'] * vars['mean_km'])
+
+            print("prediction1 pour 139800 = ", estimate_price(139800, teta0, teta1))
+            print("prediction1 pour 1110 = ", estimate_price(1110, teta0, teta1))
 
     except Exception as e:
         print("Error: ", str(e))
