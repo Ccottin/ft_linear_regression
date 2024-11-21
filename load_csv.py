@@ -9,8 +9,12 @@ def load(path: str) -> DataFrame:
     and returns it."""
     try:
         data = pd.read_csv(path)
-        print("Loading dataset of dimensions", data.shape)
         return (data)
     except Exception as e:
         print("Error:", str(e))
         return None
+
+def save(path:str, theta0:float, theta1:float) :
+    """save thetas into a csv for later uses"""
+    df = DataFrame({"theta0": [theta0], "theta1": [theta1]})
+    df.to_csv('thetas.csv', index=False)
