@@ -3,6 +3,8 @@ from display import display_dots
 from pandas import DataFrame, options
 import sys
 from math import sqrt, isclose
+import matplotlib.pyplot as plt
+
 
 
 def print_tests(data, vars, tmptheta0, tmptheta1):
@@ -104,6 +106,7 @@ def main():
         vars = {'theta0': 0, 'theta1': 0, 'learning_rate': learning_rate,
                 'prev_mse': 0, 'm_mse': get_m_mse(data)}
 
+        plt.rcParams['figure.figsize'] = [10, 10] 
         standardise(data, vars)
         while True:
             if linear_regression(vars, data) == 1:
