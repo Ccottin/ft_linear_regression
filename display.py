@@ -25,26 +25,24 @@ def display_dots(data, vars):
     plt.ylim(-1000, data['price'].max() + 1000)
     plt.grid(True)
 
-    # fonction de cout 1/2m * pourchaque i(theta1 µ* xi - yi)²
+    # fonction de cout 1/2m * pourchaque i((theta1 * xi) - yi)²
     plt.subplot(1, 2, 2)
     cost = DataFrame(columns=['x_values', 'y_values'])
     cost['x_values'] = np.linspace(-1200, -100, 1000)
-    theta1_range = np.linspace(-1200, -1000, 100) 
      # Essaie une large plage
-    cost_values = [] 
-    for theta1 in theta1_range:
-        cost['prediction'] = theta1 * data['s_km']  # Prédictions h_theta(x)
-        cost['squared_error'] = (cost['prediction'] - data['price']) ** 2  # Erreur quadratique
-        costt = (1 / (2 * len(data))) * cost['squared_error'].sum()  # Fonction de coût J(theta1)
-        cost_values.append(costt)
-
-   # plt.plot(vars['theta1'], vars['theta1'], 'o', label='theta 1')
-    print(cost, vars['theta1'])
-    plt.plot(theta1_range, cost_values, label="Courbe de coût")
+    tmp_array = []
+    for theta1 in cost['x_values']:
+        cost['predicted'] = theta1 * data['s_km']  # Prédictions h_theta(x)
+        cost['squared_error'] = (cost['predicted'] - data['price']) ** 2  # Erreur quadratique
+        temp = (1 / (2 * len(data))) * cost['squared_error'].sum()  # Fonction de coût J(theta1)
+        tmp_array.append(temp) 
+    cost['y_values'] = tmp_array
+    plt.plot(cost['x_values'], cost['y_values'], label="Courbe de coût")
     plt.grid(True)
-    cost['prediction'] = vars['theta1'] * data['s_km']
-    cost['squared_error'] = (cost['prediction'] - data['price']) ** 2  # Erreur quadratique
+    cost['predicted'] = vars['theta1'] * data['s_km']
+    cost['squared_error'] = (cost['predicted'] - data['price']) ** 2  # Erreur quadratique
     actual_cost = (1 / (2 * len(data))) * cost['squared_error'].sum()  # Fonction de coût J(theta1)
+    
     plt.scatter(vars['theta1'], actual_cost, color='red', label=f"Theta1 ({vars['theta1']:.2f})")
     
     
